@@ -9,7 +9,9 @@ const repository = AppDataSource.getRepository(Product);
 
 /* GET products */
 router.get('/', async (req: Request, res: Response, next: any) => {
+  console.log('◀◀◀  ▶▶▶');
   try {
+   
     // SELECT * FROM [Products] AS 'product'
     const products = await repository
       .createQueryBuilder('product')
@@ -100,5 +102,27 @@ router.delete('/:id', async (req: Request, res: Response, next: any) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
+/*Call Procedure*/
+router.get('/get-min-discount/:discount', async (req: Request, res: Response, next: any) => {
+  try {
+    const discount = req.params.discount;
+    const results = await repository.manager.connection.query('EXECUTE [dbo].[usp_ProductsWithMinDiscount] @0', [discount]);
+    res.json(results);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+/*Call Procedure Get-Min-Stock*/
+router.get('/get-min-stock/:stock', async (req: Request, res: Response, next: any) => {
+  try {
+    const {stock} = req.params;
+    const results = await repository.manager.connection.query('EXECUTE [dbo].[usp_GetProductsWithMinStock] @0', [stock]);
+    res.json(results);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+    
 export default router;

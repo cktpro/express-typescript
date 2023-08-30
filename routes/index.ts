@@ -28,7 +28,7 @@ router.get('/call-separating-entity', async (req: Request, res: Response, next: 
 
 router.get('/call-raw-sql', async (req: Request, res: Response, next: any) => {
   try {
-    const results = await repository.manager.connection.query('SELECT * FROM Orders AS O WHERE O.Id = @0', [10]);
+    const results = await repository.manager.connection.query('SELECT * FROM Orders AS O WHERE O.Id = @0', [1]);
     res.json(results);
     // res.json(toCamelCase(results));
   } catch (error) {

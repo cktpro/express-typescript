@@ -83,5 +83,15 @@ router.delete('/:id', async (req: Request, res: Response, next: any) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+/*Call View Category*/
+router.get('/get-view-category/', async (req: Request, res: Response, next: any) => { 
+  try {
+    const results = await repository.manager.connection.query('SELECT * FROM [dbo].[v_EmployeeSoldWithSub]');
+    res.status(200).json("abc");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 export default router;
