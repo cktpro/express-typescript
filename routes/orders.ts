@@ -50,6 +50,49 @@ router.get('/', async (req: Request, res: Response, next: any) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+/* GET order by id */
+router.get('/:id', async (req: Request, res: Response, next: any) => {
+  try {
+    // SELECT * FROM [Products] AS 'product'
+    const orders = await repository
+      .createQueryBuilder('order')
+      .leftJoinAndSelect('order.customer', 'customer')
+      .leftJoinAndSelect('order.employee', 'employee')
+      .leftJoinAndSelect('order.orderDetails', 'orderDetails')
+      .leftJoinAndSelect('orderDetails.product', 'product')
+      .leftJoinAndSelect('product.category', 'category')
+      .where('order.id = :id', { id: parseInt(req.params.id) })
+      .select([
+        'order.id',
+        'order.createdDate',
+        'order.shippedDate',
+        'order.shippingAddress',
+        'order.shippingCity',
+        'order.paymentType',
+        'order.status',
+        'order.description',
+        'order.customerId',
+        'order.employeeId',
+        'customer',
+        'employee',
+        'orderDetails.quantity',
+        'orderDetails.price',
+        'orderDetails.discount',
+        'product',
+        'category',
+      ])
+      .getOne();
+
+    if (!orders) {
+      res.status(204).send();
+    } else {
+      res.json(orders);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 /* POST order */
 router.post('/', async (req: Request, res: Response, next: any) => {

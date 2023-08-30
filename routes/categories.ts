@@ -1,3 +1,4 @@
+import { Length } from 'class-validator';
 import express, { Express, NextFunction, Request, Response } from 'express';
 
 import { AppDataSource } from '../data-source';
@@ -22,6 +23,16 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+/*Search Category*/
+router.get('/search-category', async (req: Request, res: Response, next: any) => {
+  try {
+    const results = await repository.manager.connection.query('SELECT * FROM [dbo].[Categories] WHERE [Name] LIKE \'%' + req.query.name + '%\'');
+    res.status(200).json(results);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 /* GET category by id */
 router.get('/:id', async (req: Request, res: Response, next: any) => {
@@ -37,16 +48,24 @@ router.get('/:id', async (req: Request, res: Response, next: any) => {
   }
 });
 
+
 /* POST category */
 router.post('/', async (req: Request, res: Response, next: any) => {
   try {
     const category = new Category();
     Object.assign(category, req.body);
     await repository.save(category);
-    res.status(201).json(category);
+    res.status(201).json(
+      { 
+        code:201,
+        message: 'Created',
+        payload: category,
+
+      }
+    );
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error});
   }
 });
 
@@ -69,6 +88,7 @@ router.patch('/:id', async (req: Request, res: Response, next: any) => {
   }
 });
 
+
 /* DELETE category */
 router.delete('/:id', async (req: Request, res: Response, next: any) => {
   try {
@@ -78,16 +98,6 @@ router.delete('/:id', async (req: Request, res: Response, next: any) => {
     }
     await repository.delete({ id: category.id });
     res.status(200).send();
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-/*Call View Category*/
-router.get('/get-view-category/', async (req: Request, res: Response, next: any) => { 
-  try {
-    const results = await repository.manager.connection.query('SELECT * FROM [dbo].[v_EmployeeSoldWithSub]');
-    res.status(200).json("abc");
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });

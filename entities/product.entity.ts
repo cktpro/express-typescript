@@ -3,6 +3,7 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'ty
 import { Category } from './category.entity';
 import { Supplier } from './supplier.entity';
 import { OrderDetail } from './order-details.entity';
+import { IsNotEmpty, Max, Min } from 'class-validator';
 
 @Entity({ name: 'Products' })
 export class Product {
@@ -12,24 +13,29 @@ export class Product {
   // ----------------------------------------------------------------------------------------------
   // NAME
   // ----------------------------------------------------------------------------------------------
+  @IsNotEmpty({ message: '$property is required' })
   @Column({ name: 'Name', length: 100 })
   name: string;
 
   // ----------------------------------------------------------------------------------------------
   // PRICE
   // ----------------------------------------------------------------------------------------------
+  @Min(0, { message: '$property must be greater than $constraint1' })
   @Column({ name: 'Price', type: 'decimal', precision: 18, scale: 2 })
   price: number;
 
   // ----------------------------------------------------------------------------------------------
   // DISCOUNT
   // ----------------------------------------------------------------------------------------------
+  @Min(0, { message: '$property must be greater than $constraint1' })
+  @Max(75, { message: '$property must be less than $constraint1' })
   @Column({ name: 'Discount', type: 'decimal', precision: 18, scale: 2, default: 0 })
   discount: number;
 
   // ----------------------------------------------------------------------------------------------
   // STOCK
   // ----------------------------------------------------------------------------------------------
+  @Min(0, { message: '$property must be greater than $constraint1' })
   @Column({ name: 'Stock', type: 'decimal', precision: 18, scale: 2, default: 0 })
   stock: number;
 
@@ -42,12 +48,14 @@ export class Product {
   // ----------------------------------------------------------------------------------------------
   // CATEGORY ID
   // ----------------------------------------------------------------------------------------------
+  @IsNotEmpty({ message: '$property is required' })
   @Column({ name: 'categoryId' })
   categoryId: number;
 
   // ----------------------------------------------------------------------------------------------
   // SUPPLIER ID
   // ----------------------------------------------------------------------------------------------
+  @IsNotEmpty({ message: '$property is required' })
   @Column({ name: 'supplierId' })
   supplierId: number;
 
